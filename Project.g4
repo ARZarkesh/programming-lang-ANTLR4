@@ -1,9 +1,22 @@
 grammar Project;
-prog:	(expr NEWLINE)* ;
-expr:	expr ('*'|'/') expr
-    |	expr ('+'|'-') expr
-    |	INT
-    |	'(' expr ')'
-    ;
-NEWLINE : [\r\n]+ ;
-INT     : [0-9]+ ;
+start: statement*;
+statement:
+    imports |
+    define_variable |
+    define_class |
+    instantiation |
+    loop_statement |
+    if_statement |
+    switch_case_statement |
+    define_function |
+    exceptions |
+    string_interpolation;
+
+/****************** skip whitespaces ******************/
+WS:[ \t\n\r]+ -> skip;
+
+/****************** comments ******************/
+COMMENT_TYPE1: '/*' .* '*/';
+COMMENT_TYPE2: '//' ~[\r\n]* -> skip;
+
+/****************** imports ******************/
