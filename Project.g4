@@ -1,22 +1,21 @@
 grammar Project;
-start: statement*;
+program: statement*;
 statement:
-    imports |
-    define_variable |
-    define_class |
-    instantiation |
-    loop_statement |
-    if_statement |
-    switch_case_statement |
-    define_function |
-    exceptions |
-    string_interpolation;
+    import_statement;
 
 /****************** skip whitespaces ******************/
-WS:[ \t\n\r]+ -> skip;
+WHITE_SPACE:[ \t\n\r]+ -> skip;
 
 /****************** comments ******************/
-COMMENT_TYPE1: '/*' .* '*/';
+COMMENT_TYPE1: '/*' .+? '*/';
 COMMENT_TYPE2: '//' ~[\r\n]* -> skip;
 
 /****************** imports ******************/
+import_statement: 'import' library_name ';' ;
+library_name: NAME;
+
+// Lexer Rules
+NAME: (UPPERCASE_LETTERS+ | LOWERCASE_LETTERS+ | DIGITS+)+;
+UPPERCASE_LETTERS: [A-Z];
+LOWERCASE_LETTERS: [a-z];
+DIGITS: [0-9];
