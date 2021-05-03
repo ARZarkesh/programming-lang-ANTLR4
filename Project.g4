@@ -3,7 +3,9 @@ program: statement*;
 statement:
    import_statement SEMICOLON
    |
-   define_var_statement SEMICOLON;
+   define_var_statement SEMICOLON
+   |
+   define_array_statement SEMICOLON;
 
 /****************** imports ******************/
 import_statement:
@@ -17,15 +19,19 @@ import_statement:
 
 /****************** define variable ******************/
 define_var_statement:
- (VAR | CONST)
- (NAME | INT_NUMBER)
- COLON DATA_TYPE
- (ASSIGN (INT_NUMBER | NAME))?
- (COMMA
- (NAME | INT_NUMBER)
- COLON DATA_TYPE
- (ASSIGN (INT_NUMBER | NAME))?
- )?;
+    (VAR | CONST) define_var (COMMA define_var)*;
+define_var:
+    define_var_with_type_declaration
+    |
+    define_var_without_type_declaration;
+
+define_var_without_type_declaration:
+    NAME ASSIGN (INT_NUMBER | DOUBLE_QUOTE NAME DOUBLE_QUOTE);
+define_var_with_type_declaration:
+    NAME COLON DATA_TYPE (ASSIGN (INT_NUMBER | (DOUBLE_QUOTE NAME DOUBLE_QUOTE)))?;
+
+define_array_statement:
+    (VAR | CONST) NAME COLON NEW ARRAY BRACKET_BEGIN DATA_TYPE BRACKET_END PARENTHESE_BEGIN ARRAY_SIZE PARENTHESE_END ;
 
 
 // Lexer Rules
@@ -33,6 +39,8 @@ VAR: 'var';
 CONST: 'const';
 IMPORT: 'import';
 FROM: 'from';
+NEW: 'new';
+ARRAY: 'Array';
 DOT: '.';
 COLON: ':';
 SEMICOLON: ';';
@@ -42,6 +50,10 @@ STAR: '*';
 ASSIGN: '=';
 BRACKET_BEGIN: '[';
 BRACKET_END: ']';
+PARENTHESE_BEGIN: '(';
+PARENTHESE_END: ')';
+DOUBLE_QUOTE: '"';
+SINGLE_QUOTE: '\'';
 
 DATA_TYPE: INT | STRING | DOUBLE | BOOLEAN | CHARACTER | FLOAT;
 INT: 'Int';
@@ -50,6 +62,7 @@ DOUBLE: 'Double';
 BOOLEAN: 'Boolean';
 CHARACTER: 'Char';
 FLOAT: 'Float';
+ARRAY_SIZE: DIGITS+;
 
 NAME: (UPPERCASE_LETTERS | LOWERCASE_LETTERS | DIGITS)+;
 fragment UPPERCASE_LETTERS: [A-Z];
