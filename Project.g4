@@ -1,28 +1,31 @@
 grammar Project;
 program: statement*;
 statement:
-   import_statement
+   import_statement SEMICOLON
    |
-   define_var_statement;
+   define_var_statement SEMICOLON;
 
 /****************** imports ******************/
 import_statement:
-    IMPORT NAME(DOT NAME)* SEMICOLON
+    IMPORT NAME(DOT NAME)*
     |
-    FROM NAME IMPORT NAME(COMMA NAME)* SEMICOLON
+    FROM NAME IMPORT NAME(COMMA NAME)*
     |
-    FROM NAME IMPORT NAME ARROW_RIGHT NAME SEMICOLON
+    FROM NAME IMPORT NAME ARROW_RIGHT NAME
     |
-    FROM NAME IMPORT STAR SEMICOLON;
+    FROM NAME IMPORT STAR ;
 
 /****************** define variable ******************/
 define_var_statement:
  (VAR | CONST)
  (NAME | INT_NUMBER)
- COLON
- DATA_TYPE
+ COLON DATA_TYPE
  (ASSIGN (INT_NUMBER | NAME))?
- SEMICOLON ;
+ (COMMA
+ (NAME | INT_NUMBER)
+ COLON DATA_TYPE
+ (ASSIGN (INT_NUMBER | NAME))?
+ )?;
 
 
 // Lexer Rules
