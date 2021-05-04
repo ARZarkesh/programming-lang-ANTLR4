@@ -102,8 +102,9 @@ class_definitiion_statement: CLASS
                              (EXTENDS VARIABLE_NAME)?
                              (IMPLEMENTS VARIABLE_NAME (WITH VARIABLE_NAME)*)?
                              BRACE_BEGIN
-                             (statement)*
+                             class_body
                              BRACE_END;
+class_body: (function_definition_statement | property_definition)*;
 
 // function definition
 function_definition_statement: data_type VARIABLE_NAME
@@ -116,12 +117,16 @@ function_definition_statement: data_type VARIABLE_NAME
                                          BRACE_END;
 params_list: data_type VARIABLE_NAME (COMMA data_type VARIABLE_NAME)*;
 
+// property definition ( in class )
+property_definition: access_modifier define_var_statement SEMICOLON;
+
 condition: BOOLEAN_VALUE | expression;
 block: BRACE_BEGIN statement* BRACE_END;
 expression: (BOOLEAN_VALUE | INT_VALUE | DOUBLE_VALUE | EXP_VALUE | VARIABLE_NAME)
             compare_sign
             (BOOLEAN_VALUE | INT_VALUE | DOUBLE_VALUE | EXP_VALUE | VARIABLE_NAME);
 compare_sign: EQUAL | LESS | LESS_EQUAL | GREATER | GREATHER_EQUAL | NON_EQUAL;
+access_modifier: PUBLIC | PRIVATE | PROTECTED;
 /*
  === === === === Lexer Rules === === === ===
 */
