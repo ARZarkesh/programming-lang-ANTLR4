@@ -22,7 +22,11 @@ statement:
    |
    do_while_loop_statement
    |
-   switch_case_statement;
+   switch_case_statement
+   |
+   class_definitiion_statement
+   |
+   function_definition_statement;
 
 // import statement
 import_statement: (FROM lib_name)? IMPORT ((lib_name(COMMA lib_name)*) | (lib_name(DOT lib_name)*) | (lib_name ARROW lib_name) | STAR);
@@ -37,7 +41,7 @@ define_var_with_type: VARIABLE_NAME COLON data_type (ASSIGN ((INT_VALUE | DOUBLE
 define_array_statement: define_array_with_initialization |  define_array_without_initialization;
 define_array_without_initialization: variable_type VARIABLE_NAME COLON NEW ARRAY BRACKET_BEGIN data_type BRACKET_END PARENTHESE_BEGIN (INT_VALUE | DOUBLE_VALUE) PARENTHESE_END ;
 define_array_with_initialization: variable_type VARIABLE_NAME ASSIGN ARRAY PARENTHESE_BEGIN (INT_VALUE | DOUBLE_VALUE) (COMMA (INT_VALUE | DOUBLE_VALUE))*  PARENTHESE_END;
-data_type: INT | STRING | DOUBLE | BOOLEAN | CHARACTER | FLOAT;
+data_type: INT | STRING | DOUBLE | BOOLEAN | CHARACTER | FLOAT | VOID;
 
 
 // if statement
@@ -92,6 +96,26 @@ switch_case_statement: SWITCH
                        )?
                        BRACE_END;
 
+// class definition
+class_definitiion_statement: CLASS
+                             VARIABLE_NAME
+                             (EXTENDS VARIABLE_NAME)?
+                             (IMPLEMENTS VARIABLE_NAME (WITH VARIABLE_NAME)*)?
+                             BRACE_BEGIN
+                             (statement)*
+                             BRACE_END;
+
+// function definition
+function_definition_statement: data_type VARIABLE_NAME
+                                         PARENTHESE_BEGIN
+                                         params_list?
+                                         PARENTHESE_END
+                                         BRACE_BEGIN
+                                         statement*
+                                         RETURN (VARIABLE_NAME | INT_VALUE | DOUBLE_VALUE | STRING_VALUE | BOOLEAN_VALUE) SEMICOLON
+                                         BRACE_END;
+params_list: data_type VARIABLE_NAME (COMMA data_type VARIABLE_NAME)*;
+
 condition: BOOLEAN_VALUE | expression;
 block: BRACE_BEGIN statement* BRACE_END;
 expression: (BOOLEAN_VALUE | INT_VALUE | DOUBLE_VALUE | EXP_VALUE | VARIABLE_NAME)
@@ -125,6 +149,11 @@ SWITCH          : 'switch';
 CASE            : 'case';
 DEFAULT         : 'default';
 BREAK           : 'break';
+CLASS           : 'class';
+EXTENDS         : 'extends';
+IMPLEMENTS      : 'implements';
+WITH            : 'with';
+RETURN          : 'return';
 
 // symbols
 DOT             : '.';
