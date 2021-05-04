@@ -104,7 +104,19 @@ class_definitiion_statement: CLASS
                              BRACE_BEGIN
                              class_body
                              BRACE_END;
-class_body: (function_definition_statement | property_definition)*;
+class_body: (
+            constructor?
+            |
+            (function_definition_statement | property_definition)*
+            );
+
+constructor: VARIABLE_NAME
+             PARENTHESE_BEGIN
+             params_list?
+             PARENTHESE_END
+             BRACE_BEGIN
+             statement*
+             BRACE_END;
 
 // function definition
 function_definition_statement: data_type VARIABLE_NAME
@@ -115,11 +127,13 @@ function_definition_statement: data_type VARIABLE_NAME
                                          statement*
                                          RETURN (VARIABLE_NAME | INT_VALUE | DOUBLE_VALUE | STRING_VALUE | BOOLEAN_VALUE) SEMICOLON
                                          BRACE_END;
-params_list: data_type VARIABLE_NAME (COMMA data_type VARIABLE_NAME)*;
+params_list: data_type VARIABLE_NAME default_value? (COMMA data_type VARIABLE_NAME default_value?)*;
+default_value: ASSIGN (INT_VALUE | DOUBLE_VALUE | STRING_VALUE | BOOLEAN_VALUE);
 
 // property definition ( in class )
 property_definition: access_modifier define_var_statement SEMICOLON;
 
+// *************************************
 condition: BOOLEAN_VALUE | expression;
 block: BRACE_BEGIN statement* BRACE_END;
 expression: (BOOLEAN_VALUE | INT_VALUE | DOUBLE_VALUE | EXP_VALUE | VARIABLE_NAME)
