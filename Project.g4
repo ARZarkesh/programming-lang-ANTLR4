@@ -12,7 +12,9 @@ statement:
    |
    define_array_statement SEMICOLON
    |
-   if_statement;
+   if_statement
+   |
+   loop_statement;
 
 /****************** imports ******************/
 import_statement: (FROM lib_name)? IMPORT ((lib_name(COMMA lib_name)*) | (lib_name(DOT lib_name)*) | (lib_name ARROW lib_name) | STAR);
@@ -34,12 +36,22 @@ data_type: INT | STRING | DOUBLE | BOOLEAN | CHARACTER | FLOAT;
 if_statement: IF PARENTHESE_BEGIN condition PARENTHESE_END block
               (ELSE_IF PARENTHESE_BEGIN condition PARENTHESE_END block)?
               (ELSE block)?;
+
+/****************** loop statement ******************/
+loop_statement: FOR
+                PARENTHESE_BEGIN
+                (VARIABLE_NAME ASSIGN (INT_VALUE | DOUBLE_VALUE | EXP_VALUE))? SEMICOLON
+                (((NEGATE)? condition) ((AND | OR) (NEGATE)? condition)*)? SEMICOLON
+                (VARIABLE_NAME (PLUS_PLUS | MINUS_MINUS))?
+                PARENTHESE_END
+                block;
+
 condition: BOOLEAN_VALUE | expression;
 block: BRACE_BEGIN statement* BRACE_END;
-expression: (BOOLEAN_VALUE | INT_VALUE | DOUBLE_VALUE | EXP_VALUE) compare_sign (BOOLEAN_VALUE | INT_VALUE | DOUBLE_VALUE | EXP_VALUE);
+expression: (BOOLEAN_VALUE | INT_VALUE | DOUBLE_VALUE | EXP_VALUE | VARIABLE_NAME)
+            compare_sign
+            (BOOLEAN_VALUE | INT_VALUE | DOUBLE_VALUE | EXP_VALUE | VARIABLE_NAME);
 compare_sign: EQUAL | LESS | LESS_EQUAL | GREATER | GREATHER_EQUAL | NON_EQUAL;
-
-
 /*
  === === === === Lexer Rules === === === ===
 */
@@ -59,6 +71,7 @@ ARRAY           : 'Array';
 IF              : 'if';
 ELSE_IF         : 'elif';
 ELSE            : 'else';
+FOR             : 'for';
 
 // symbols
 DOT             : '.';
@@ -79,6 +92,8 @@ SINGLE_QUOTE    : '\'';
 EXP_SYMBOL      : 'E' | 'e';
 PLUS            : '+';
 MINUS           : '-';
+PLUS_PLUS       : '++';
+MINUS_MINUS     : '--';
 
 // compare signs
 EQUAL           : '==';
@@ -87,6 +102,11 @@ LESS            : '<';
 GREATHER_EQUAL  : '>=';
 LESS_EQUAL      : '<=';
 NON_EQUAL       : '!=';
+
+// logical operators
+AND             : '&&';
+OR              : '||';
+NEGATE          : '!';
 
 // primitive data types
 INT             : 'Int';
@@ -102,6 +122,7 @@ PUBLIC          : 'public';
 PRIVATE         : 'private';
 PROTECTED       : 'protected';
 
+// values
 BOOLEAN_VALUE: 'true' | 'false';
 INT_VALUE: DIGIT+;
 DOUBLE_VALUE: DIGIT+ DECIMAL_PART;
