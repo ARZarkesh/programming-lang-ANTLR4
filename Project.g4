@@ -14,7 +14,9 @@ statement:
    |
    if_statement
    |
-   loop_statement;
+   for_loop_statement
+   |
+   foreach_loop_statement;
 
 /****************** imports ******************/
 import_statement: (FROM lib_name)? IMPORT ((lib_name(COMMA lib_name)*) | (lib_name(DOT lib_name)*) | (lib_name ARROW lib_name) | STAR);
@@ -37,14 +39,21 @@ if_statement: IF PARENTHESE_BEGIN condition PARENTHESE_END block
               (ELSE_IF PARENTHESE_BEGIN condition PARENTHESE_END block)?
               (ELSE block)?;
 
-/****************** loop statement ******************/
-loop_statement: FOR
+// for loop
+for_loop_statement: FOR
                 PARENTHESE_BEGIN
                 (VARIABLE_NAME ASSIGN (INT_VALUE | DOUBLE_VALUE | EXP_VALUE))? SEMICOLON
                 (((NEGATE)? condition) ((AND | OR) (NEGATE)? condition)*)? SEMICOLON
                 (VARIABLE_NAME (PLUS_PLUS | MINUS_MINUS))?
                 PARENTHESE_END
                 block;
+
+// foreach loop
+foreach_loop_statement: FOR
+                        PARENTHESE_BEGIN
+                        VAR VARIABLE_NAME IN VARIABLE_NAME
+                        PARENTHESE_END
+                        block;
 
 condition: BOOLEAN_VALUE | expression;
 block: BRACE_BEGIN statement* BRACE_END;
@@ -72,6 +81,7 @@ IF              : 'if';
 ELSE_IF         : 'elif';
 ELSE            : 'else';
 FOR             : 'for';
+IN              : 'in';
 
 // symbols
 DOT             : '.';
