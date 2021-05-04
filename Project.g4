@@ -16,7 +16,9 @@ statement:
    |
    for_loop_statement
    |
-   foreach_loop_statement;
+   foreach_loop_statement
+   |
+   while_loop_statement;
 
 /****************** imports ******************/
 import_statement: (FROM lib_name)? IMPORT ((lib_name(COMMA lib_name)*) | (lib_name(DOT lib_name)*) | (lib_name ARROW lib_name) | STAR);
@@ -55,6 +57,13 @@ foreach_loop_statement: FOR
                         PARENTHESE_END
                         block;
 
+// while loop
+while_loop_statement: WHILE
+                      PARENTHESE_BEGIN
+                      (((NEGATE)? condition) ((AND | OR) (NEGATE)? condition)*)?
+                      PARENTHESE_END
+                      block;
+
 condition: BOOLEAN_VALUE | expression;
 block: BRACE_BEGIN statement* BRACE_END;
 expression: (BOOLEAN_VALUE | INT_VALUE | DOUBLE_VALUE | EXP_VALUE | VARIABLE_NAME)
@@ -82,6 +91,7 @@ ELSE_IF         : 'elif';
 ELSE            : 'else';
 FOR             : 'for';
 IN              : 'in';
+WHILE           : 'while';
 
 // symbols
 DOT             : '.';
