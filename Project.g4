@@ -20,13 +20,15 @@ statement:
    |
    while_loop_statement
    |
-   do_while_loop_statement;
+   do_while_loop_statement
+   |
+   switch_case_statement;
 
-/****************** imports ******************/
+// import statement
 import_statement: (FROM lib_name)? IMPORT ((lib_name(COMMA lib_name)*) | (lib_name(DOT lib_name)*) | (lib_name ARROW lib_name) | STAR);
 lib_name: VARIABLE_NAME;
 
-/****************** define variable ******************/
+// define variable statement
 define_var_statement: variable_type define_var (COMMA define_var)*;
 define_var: define_var_with_type | define_var_without_type;
 variable_type: VAR | CONST;
@@ -38,7 +40,7 @@ define_array_with_initialization: variable_type VARIABLE_NAME ASSIGN ARRAY PAREN
 data_type: INT | STRING | DOUBLE | BOOLEAN | CHARACTER | FLOAT;
 
 
-/****************** if statement ******************/
+// if statement
 if_statement: IF PARENTHESE_BEGIN condition PARENTHESE_END block
               (ELSE_IF PARENTHESE_BEGIN condition PARENTHESE_END block)?
               (ELSE block)?;
@@ -74,6 +76,22 @@ do_while_loop_statement: DO
                          (((NEGATE)? condition) ((AND | OR) (NEGATE)? condition)*)?
                          PARENTHESE_END;
 
+// switch/case statement
+switch_case_statement: SWITCH
+                       PARENTHESE_BEGIN VARIABLE_NAME PARENTHESE_END
+                       BRACE_BEGIN
+                       (
+                       CASE (INT_VALUE | DOUBLE_VALUE | STRING_VALUE) COLON
+                       statement*
+                       (BREAK SEMICOLON)?
+                       )+
+                       (
+                       DEFAULT COLON
+                       statement*
+                       (BREAK SEMICOLON)?
+                       )?
+                       BRACE_END;
+
 condition: BOOLEAN_VALUE | expression;
 block: BRACE_BEGIN statement* BRACE_END;
 expression: (BOOLEAN_VALUE | INT_VALUE | DOUBLE_VALUE | EXP_VALUE | VARIABLE_NAME)
@@ -103,6 +121,10 @@ FOR             : 'for';
 IN              : 'in';
 WHILE           : 'while';
 DO              : 'do';
+SWITCH          : 'switch';
+CASE            : 'case';
+DEFAULT         : 'default';
+BREAK           : 'break';
 
 // symbols
 DOT             : '.';
@@ -154,6 +176,7 @@ PRIVATE         : 'private';
 PROTECTED       : 'protected';
 
 // values
+STRING_VALUE: DOUBLE_QUOTE .*? DOUBLE_QUOTE;
 BOOLEAN_VALUE: 'true' | 'false';
 INT_VALUE: DIGIT+;
 DOUBLE_VALUE: DIGIT+ DECIMAL_PART;
