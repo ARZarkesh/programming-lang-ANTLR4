@@ -4,10 +4,8 @@ grammar Project;
  === === === === Parser Rules === === === ===
 */
 
-program: statement*;
+program: import_statement* statement*;
 statement:
-   import_statement SEMICOLON
-   |
    define_var_statement SEMICOLON
    |
    define_array_statement SEMICOLON
@@ -33,31 +31,48 @@ statement:
    try_catch;
 
 // import statement
-import_statement: (FROM lib_name)? IMPORT ((lib_name(COMMA lib_name)*) | (lib_name(DOT lib_name)*) | (lib_name ARROW lib_name) | STAR);
+import_statement: (FROM lib_name (DOT lib_name)*)?
+                  IMPORT
+                  (
+                  (lib_name(COMMA lib_name)*)
+                  |
+                  (lib_name(DOT lib_name)*)
+                  |
+                  (lib_name ARROW lib_name)
+                  |
+                  STAR
+                  )
+                  SEMICOLON;
 lib_name: VARIABLE_NAME;
 
 // define variable statement
-define_var_statement: variable_type define_var (COMMA define_var)*;
+define_var_statement: variable_type
+                      define_var
+                      (COMMA define_var)*;
 define_var: define_var_with_type | define_var_without_type;
-variable_type: VAR | CONST;
-define_var_without_type: VARIABLE_NAME ASSIGN ((INT_VALUE | DOUBLE_VALUE | EXP_VALUE | BOOLEAN_VALUE) | DOUBLE_QUOTE .*? DOUBLE_QUOTE);
-define_var_with_type: VARIABLE_NAME COLON data_type (ASSIGN ((INT_VALUE | DOUBLE_VALUE | EXP_VALUE | BOOLEAN_VALUE) | (DOUBLE_QUOTE .*? DOUBLE_QUOTE)))?;
+define_var_without_type: VARIABLE_NAME ASSIGN value;
+define_var_with_type: VARIABLE_NAME
+                      COLON data_type
+                      ( ASSIGN value )?;
 define_array_statement: define_array_with_initialization |  define_array_without_initialization;
-define_array_without_initialization: variable_type VARIABLE_NAME COLON NEW ARRAY BRACKET_BEGIN data_type BRACKET_END PARENTHESE_BEGIN (INT_VALUE | DOUBLE_VALUE) PARENTHESE_END ;
-define_array_with_initialization: variable_type VARIABLE_NAME ASSIGN ARRAY PARENTHESE_BEGIN (INT_VALUE | DOUBLE_VALUE) (COMMA (INT_VALUE | DOUBLE_VALUE))*  PARENTHESE_END;
-data_type: INT | STRING | DOUBLE | BOOLEAN | CHARACTER | FLOAT | VOID;
+define_array_without_initialization: variable_type
+                                     VARIABLE_NAME
+                                     COLON NEW ARRAY
+                                     (BRACKET_BEGIN data_type BRACKET_END)?
+                                     PARENTHESE_BEGIN (INT_VALUE | DOUBLE_VALUE) PARENTHESE_END;
+define_array_with_initialization: variable_type VARIABLE_NAME ASSIGN ARRAY PARENTHESE_BEGIN args_list PARENTHESE_END;
 
 
 // if statement
 if_statement: IF
               PARENTHESE_BEGIN
-              (((NEGATE)? condition) ((AND | OR) (NEGATE)? condition)*)?
+              (((NOT)? condition) ((AND | OR) (NOT)? condition)*)?
               PARENTHESE_END
               block
               (
               ELSE_IF
               PARENTHESE_BEGIN
-              (((NEGATE)? condition) ((AND | OR) (NEGATE)? condition)*)?
+              (((NOT)? condition) ((AND | OR) (NOT)? condition)*)?
               PARENTHESE_END
               block
               )?
@@ -67,7 +82,7 @@ if_statement: IF
 for_loop_statement: FOR
                     PARENTHESE_BEGIN
                     (VARIABLE_NAME ASSIGN (INT_VALUE | DOUBLE_VALUE | EXP_VALUE))? SEMICOLON
-                    (((NEGATE)? condition) ((AND | OR) (NEGATE)? condition)*)? SEMICOLON
+                    (((NOT)? condition) ((AND | OR) (NOT)? condition)*)? SEMICOLON
                     (VARIABLE_NAME (PLUS_PLUS | MINUS_MINUS))?
                     PARENTHESE_END
                     block;
@@ -82,7 +97,7 @@ foreach_loop_statement: FOR
 // while loop
 while_loop_statement: WHILE
                       PARENTHESE_BEGIN
-                      (((NEGATE)? condition) ((AND | OR) (NEGATE)? condition)*)?
+                      (((NOT)? condition) ((AND | OR) (NOT)? condition)*)?
                       PARENTHESE_END
                       block;
 
@@ -91,7 +106,7 @@ do_while_loop_statement: DO
                          block
                          WHILE
                          PARENTHESE_BEGIN
-                         (((NEGATE)? condition) ((AND | OR) (NEGATE)? condition)*)?
+                         (((NOT)? condition) ((AND | OR) (NOT)? condition)*)?
                          PARENTHESE_END;
 
 // switch/case statement
@@ -99,7 +114,7 @@ switch_case_statement: SWITCH
                        PARENTHESE_BEGIN VARIABLE_NAME PARENTHESE_END
                        BRACE_BEGIN
                        (
-                       CASE (INT_VALUE | DOUBLE_VALUE | STRING_VALUE) COLON
+                       CASE value COLON
                        statement*
                        (BREAK SEMICOLON)?
                        )+
@@ -118,11 +133,7 @@ class_definitiion_statement: CLASS
                              BRACE_BEGIN
                              class_body
                              BRACE_END;
-class_body: (
-            constructor?
-            |
-            (function_definition_statement | property_definition)*
-            );
+class_body: (function_definition_statement | property_definition | constructor)*;
 
 constructor: VARIABLE_NAME
              PARENTHESE_BEGIN
@@ -139,17 +150,17 @@ function_definition_statement: data_type VARIABLE_NAME
                                          PARENTHESE_END
                                          BRACE_BEGIN
                                          statement*
-                                         RETURN (VARIABLE_NAME | INT_VALUE | DOUBLE_VALUE | STRING_VALUE | BOOLEAN_VALUE) SEMICOLON
+                                         RETURN (value | VARIABLE_NAME)? SEMICOLON
                                          BRACE_END;
 params_list: data_type VARIABLE_NAME default_value? (COMMA data_type VARIABLE_NAME default_value?)*;
-default_value: ASSIGN (INT_VALUE | DOUBLE_VALUE | STRING_VALUE | BOOLEAN_VALUE);
+default_value: ASSIGN value;
 
 // property definition ( in class )
 property_definition: access_modifier define_var_statement SEMICOLON;
 
 // object instantiation
 obj_instant: variable_type VARIABLE_NAME COLON NEW VARIABLE_NAME PARENTHESE_BEGIN args_list? PARENTHESE_END;
-args_list: (INT_VALUE | DOUBLE_VALUE | STRING_VALUE | BOOLEAN_VALUE) (COMMA (INT_VALUE | DOUBLE_VALUE | STRING_VALUE | BOOLEAN_VALUE))*;
+args_list: value (COMMA value)*;
 
 // exception
 try_catch: TRY block
@@ -162,11 +173,13 @@ try_catch: TRY block
 // *************************************
 condition: BOOLEAN_VALUE | expression;
 block: BRACE_BEGIN statement* BRACE_END;
-expression: (BOOLEAN_VALUE | INT_VALUE | DOUBLE_VALUE | EXP_VALUE | VARIABLE_NAME)
-            compare_sign
-            (BOOLEAN_VALUE | INT_VALUE | DOUBLE_VALUE | EXP_VALUE | VARIABLE_NAME);
+expression: (value | VARIABLE_NAME) compare_sign (value | VARIABLE_NAME);
 compare_sign: EQUAL | LESS | LESS_EQUAL | GREATER | GREATHER_EQUAL | NON_EQUAL;
 access_modifier: PUBLIC | PRIVATE | PROTECTED;
+variable_type: VAR | CONST;
+data_type: INT | STRING | DOUBLE | BOOLEAN | CHARACTER | FLOAT | VOID;
+value: INT_VALUE | BOOLEAN_VALUE | DOUBLE_VALUE | EXP_VALUE | STRING_VALUE;
+
 /*
  === === === === Lexer Rules === === === ===
 */
@@ -236,7 +249,7 @@ NON_EQUAL       : '!=';
 // logical operators
 AND             : '&&';
 OR              : '||';
-NEGATE          : '!';
+NOT             : '!';
 
 // primitive data types
 INT             : 'Int';
