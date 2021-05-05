@@ -264,5 +264,4 @@ EXP_PART: EXP_SYMBOL (PLUS | MINUS)? DIGIT+;
 // variable naming rule
 VARIABLE_NAME: [a-zA-Z$_]+ [a-zA-Z0-9$_]+;
 
-LETTER: [a-zA-Z];
 DIGIT: [0-9];
