@@ -49,18 +49,28 @@ data_type: INT | STRING | DOUBLE | BOOLEAN | CHARACTER | FLOAT | VOID;
 
 
 // if statement
-if_statement: IF PARENTHESE_BEGIN condition PARENTHESE_END block
-              (ELSE_IF PARENTHESE_BEGIN condition PARENTHESE_END block)?
+if_statement: IF
+              PARENTHESE_BEGIN
+              (((NEGATE)? condition) ((AND | OR) (NEGATE)? condition)*)?
+              PARENTHESE_END
+              block
+              (
+              ELSE_IF
+              PARENTHESE_BEGIN
+              (((NEGATE)? condition) ((AND | OR) (NEGATE)? condition)*)?
+              PARENTHESE_END
+              block
+              )?
               (ELSE block)?;
 
 // for loop
 for_loop_statement: FOR
-                PARENTHESE_BEGIN
-                (VARIABLE_NAME ASSIGN (INT_VALUE | DOUBLE_VALUE | EXP_VALUE))? SEMICOLON
-                (((NEGATE)? condition) ((AND | OR) (NEGATE)? condition)*)? SEMICOLON
-                (VARIABLE_NAME (PLUS_PLUS | MINUS_MINUS))?
-                PARENTHESE_END
-                block;
+                    PARENTHESE_BEGIN
+                    (VARIABLE_NAME ASSIGN (INT_VALUE | DOUBLE_VALUE | EXP_VALUE))? SEMICOLON
+                    (((NEGATE)? condition) ((AND | OR) (NEGATE)? condition)*)? SEMICOLON
+                    (VARIABLE_NAME (PLUS_PLUS | MINUS_MINUS))?
+                    PARENTHESE_END
+                    block;
 
 // foreach loop
 foreach_loop_statement: FOR
