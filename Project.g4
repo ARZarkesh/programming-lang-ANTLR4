@@ -26,7 +26,9 @@ statement:
    |
    class_definitiion_statement
    |
-   function_definition_statement;
+   function_definition_statement
+   |
+   obj_instant SEMICOLON;
 
 // import statement
 import_statement: (FROM lib_name)? IMPORT ((lib_name(COMMA lib_name)*) | (lib_name(DOT lib_name)*) | (lib_name ARROW lib_name) | STAR);
@@ -132,6 +134,10 @@ default_value: ASSIGN (INT_VALUE | DOUBLE_VALUE | STRING_VALUE | BOOLEAN_VALUE);
 
 // property definition ( in class )
 property_definition: access_modifier define_var_statement SEMICOLON;
+
+// object instantiation
+obj_instant: variable_type VARIABLE_NAME COLON NEW VARIABLE_NAME PARENTHESE_BEGIN args_list? PARENTHESE_END;
+args_list: (INT_VALUE | DOUBLE_VALUE | STRING_VALUE | BOOLEAN_VALUE) (COMMA (INT_VALUE | DOUBLE_VALUE | STRING_VALUE | BOOLEAN_VALUE))*;
 
 // *************************************
 condition: BOOLEAN_VALUE | expression;
