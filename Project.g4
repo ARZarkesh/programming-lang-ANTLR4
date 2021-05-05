@@ -26,6 +26,8 @@ statement:
    |
    function_definition_statement
    |
+   function_call_statement
+   |
    obj_instant SEMICOLON
    |
    try_catch;
@@ -46,21 +48,23 @@ import_statement: (FROM lib_name (DOT lib_name)*)?
 lib_name: VARIABLE_NAME;
 
 // define variable statement
-define_var_statement: variable_type
-                      define_var
-                      (COMMA define_var)*;
+define_var_statement: variable_type define_var (COMMA define_var)*;
 define_var: define_var_with_type | define_var_without_type;
 define_var_without_type: VARIABLE_NAME ASSIGN value;
-define_var_with_type: VARIABLE_NAME
-                      COLON data_type
-                      ( ASSIGN value )?;
-define_array_statement: define_array_with_initialization |  define_array_without_initialization;
+define_var_with_type: VARIABLE_NAME COLON data_type ( ASSIGN value )?;
+define_array_statement: define_array_with_initialization | define_array_without_initialization;
 define_array_without_initialization: variable_type
                                      VARIABLE_NAME
                                      COLON NEW ARRAY
                                      (BRACKET_BEGIN data_type BRACKET_END)?
                                      PARENTHESE_BEGIN (INT_VALUE | DOUBLE_VALUE) PARENTHESE_END;
-define_array_with_initialization: variable_type VARIABLE_NAME ASSIGN ARRAY PARENTHESE_BEGIN args_list PARENTHESE_END;
+define_array_with_initialization: variable_type
+                                  VARIABLE_NAME
+                                  ASSIGN
+                                  ARRAY
+                                  PARENTHESE_BEGIN
+                                  args_list
+                                  PARENTHESE_END;
 
 
 // if statement
@@ -152,15 +156,13 @@ function_definition_statement: data_type VARIABLE_NAME
                                          statement*
                                          RETURN (value | VARIABLE_NAME)? SEMICOLON
                                          BRACE_END;
-params_list: data_type VARIABLE_NAME default_value? (COMMA data_type VARIABLE_NAME default_value?)*;
-default_value: ASSIGN value;
+
 
 // property definition ( in class )
 property_definition: access_modifier define_var_statement SEMICOLON;
 
 // object instantiation
 obj_instant: variable_type VARIABLE_NAME COLON NEW VARIABLE_NAME PARENTHESE_BEGIN args_list? PARENTHESE_END;
-args_list: value (COMMA value)*;
 
 // exception
 try_catch: TRY block
@@ -170,7 +172,17 @@ try_catch: TRY block
            CATCH PARENTHESE_BEGIN VARIABLE_NAME PARENTHESE_END block
            );
 
+// function ( method ) call
+function_call_statement: chaining
+                         PARENTHESE_BEGIN
+                         args_list?
+                         PARENTHESE_END
+                         SEMICOLON;
+
 // *************************************
+params_list: data_type VARIABLE_NAME default_value? (COMMA data_type VARIABLE_NAME default_value?)*;
+default_value: ASSIGN value;
+args_list: ((value | chaining) (COMMA (value | chaining))*);
 condition: BOOLEAN_VALUE | expression;
 block: BRACE_BEGIN statement* BRACE_END;
 expression: (value | VARIABLE_NAME) compare_sign (value | VARIABLE_NAME);
@@ -179,6 +191,7 @@ access_modifier: PUBLIC | PRIVATE | PROTECTED;
 variable_type: VAR | CONST;
 data_type: INT | STRING | DOUBLE | BOOLEAN | CHARACTER | FLOAT | VOID;
 value: INT_VALUE | BOOLEAN_VALUE | DOUBLE_VALUE | EXP_VALUE | STRING_VALUE;
+chaining: VARIABLE_NAME (DOT VARIABLE_NAME)*;
 
 /*
  === === === === Lexer Rules === === === ===
