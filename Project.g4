@@ -28,7 +28,9 @@ statement:
    |
    function_definition_statement
    |
-   obj_instant SEMICOLON;
+   obj_instant SEMICOLON
+   |
+   try_catch;
 
 // import statement
 import_statement: (FROM lib_name)? IMPORT ((lib_name(COMMA lib_name)*) | (lib_name(DOT lib_name)*) | (lib_name ARROW lib_name) | STAR);
@@ -139,6 +141,14 @@ property_definition: access_modifier define_var_statement SEMICOLON;
 obj_instant: variable_type VARIABLE_NAME COLON NEW VARIABLE_NAME PARENTHESE_BEGIN args_list? PARENTHESE_END;
 args_list: (INT_VALUE | DOUBLE_VALUE | STRING_VALUE | BOOLEAN_VALUE) (COMMA (INT_VALUE | DOUBLE_VALUE | STRING_VALUE | BOOLEAN_VALUE))*;
 
+// exception
+try_catch: TRY block
+           (
+           ON VARIABLE_NAME (CATCH PARENTHESE_BEGIN VARIABLE_NAME PARENTHESE_END)? block
+           |
+           CATCH PARENTHESE_BEGIN VARIABLE_NAME PARENTHESE_END block
+           );
+
 // *************************************
 condition: BOOLEAN_VALUE | expression;
 block: BRACE_BEGIN statement* BRACE_END;
@@ -179,6 +189,9 @@ EXTENDS         : 'extends';
 IMPLEMENTS      : 'implements';
 WITH            : 'with';
 RETURN          : 'return';
+TRY             : 'try';
+ON              : 'on';
+CATCH           : 'catch';
 
 // symbols
 DOT             : '.';
