@@ -1,0 +1,78 @@
+import math;
+from math import *;
+from root.myMath import random;
+from math import random, floor;
+from math import random => rand;
+
+const myConst = "lorem ipsum";
+var myVar : Int = 25, myStr : String;
+var myArray : new Array [Double] (4);
+const myInitiatedArray = Array (11, 42, 33, 41, 90.25);
+
+class Point implements Movable with Plottable {
+    private var px: Int, py: Int;
+    Point (Int px = 0, Int py = 0) {
+        this.px = px;
+        this.py = py;
+    }
+    Int moveHorizontal (Int step) {
+        px += step;
+        return px;
+    }
+}
+
+var point : new Point(1 , 2);
+const origin : new Point();
+
+for (myVar = 0; myVar < count && count > 5; myVar++) {
+    sum += myVar;
+}
+
+for (var obj in myList ) {
+    newList.add (obj.name);
+}
+
+while (3 <= 4 || !counter == 3) {
+
+}
+
+do {
+
+} while (false)
+
+if (x2 != y2) {
+
+} elif (true) {
+
+} else {
+
+}
+
+switch (name) {
+    case "Jan":
+        print("it’s January");
+        break;
+    case "Feb":
+    case "Dec":
+        print("close enough");
+        break;
+    default:
+        print("try again");
+}
+
+Double divide (Int num1, Int num2) {
+    var result : Double;
+    result = num1 / num2;
+    return result;
+}
+
+try {
+    res = num1 / num2;
+}
+on DivisionByZeroException catch (err) {
+    print ("num 2 = 0");
+    print (err);
+}
+catch (err) {
+    print (err, "oops.");
+}
