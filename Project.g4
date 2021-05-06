@@ -33,33 +33,32 @@ statement:
    try_catch;
 
 // import statement
-import_statement: (FROM lib_name (DOT lib_name)*)?
+import_statement: (FROM chaining)?
                   IMPORT
                   (
-                  (lib_name(COMMA lib_name)*)
+                  (IDENTIFIER(COMMA IDENTIFIER)*)
                   |
-                  (lib_name(DOT lib_name)*)
+                  (chaining)
                   |
-                  (lib_name ARROW lib_name)
+                  (IDENTIFIER ARROW IDENTIFIER)
                   |
                   STAR
                   )
                   SEMICOLON;
-lib_name: VARIABLE_NAME;
 
 // define variable statement
 define_var_statement: variable_type define_var (COMMA define_var)*;
 define_var: define_var_with_type | define_var_without_type;
-define_var_without_type: VARIABLE_NAME ASSIGN value;
-define_var_with_type: VARIABLE_NAME COLON data_type ( ASSIGN value )?;
+define_var_without_type: IDENTIFIER ASSIGN value;
+define_var_with_type: IDENTIFIER COLON data_type ( ASSIGN value )?;
 define_array_statement: define_array_with_initialization | define_array_without_initialization;
 define_array_without_initialization: variable_type
-                                     VARIABLE_NAME
+                                     IDENTIFIER
                                      COLON NEW ARRAY
                                      (BRACKET_BEGIN data_type BRACKET_END)?
                                      PARENTHESE_BEGIN (INT_VALUE | DOUBLE_VALUE) PARENTHESE_END;
 define_array_with_initialization: variable_type
-                                  VARIABLE_NAME
+                                  IDENTIFIER
                                   ASSIGN
                                   ARRAY
                                   PARENTHESE_BEGIN
@@ -85,16 +84,16 @@ if_statement: IF
 // for loop
 for_loop_statement: FOR
                     PARENTHESE_BEGIN
-                    (VARIABLE_NAME ASSIGN (INT_VALUE | DOUBLE_VALUE | EXP_VALUE))? SEMICOLON
+                    (IDENTIFIER ASSIGN (INT_VALUE | DOUBLE_VALUE | EXP_VALUE))? SEMICOLON
                     (((NOT)? condition) ((AND | OR) (NOT)? condition)*)? SEMICOLON
-                    (VARIABLE_NAME (PLUS_PLUS | MINUS_MINUS))?
+                    (IDENTIFIER (PLUS_PLUS | MINUS_MINUS))?
                     PARENTHESE_END
                     block;
 
 // foreach loop
 foreach_loop_statement: FOR
                         PARENTHESE_BEGIN
-                        VAR VARIABLE_NAME IN VARIABLE_NAME
+                        VAR IDENTIFIER IN IDENTIFIER
                         PARENTHESE_END
                         block;
 
@@ -115,7 +114,7 @@ do_while_loop_statement: DO
 
 // switch/case statement
 switch_case_statement: SWITCH
-                       PARENTHESE_BEGIN VARIABLE_NAME PARENTHESE_END
+                       PARENTHESE_BEGIN IDENTIFIER PARENTHESE_END
                        BRACE_BEGIN
                        (
                        CASE value COLON
@@ -131,15 +130,15 @@ switch_case_statement: SWITCH
 
 // class definition
 class_definitiion_statement: CLASS
-                             VARIABLE_NAME
-                             (EXTENDS VARIABLE_NAME)?
-                             (IMPLEMENTS VARIABLE_NAME (WITH VARIABLE_NAME)*)?
+                             IDENTIFIER
+                             (EXTENDS IDENTIFIER)?
+                             (IMPLEMENTS IDENTIFIER (WITH IDENTIFIER)*)?
                              BRACE_BEGIN
                              class_body
                              BRACE_END;
 class_body: (function_definition_statement | property_definition | constructor)*;
 
-constructor: VARIABLE_NAME
+constructor: IDENTIFIER
              PARENTHESE_BEGIN
              params_list?
              PARENTHESE_END
@@ -148,13 +147,13 @@ constructor: VARIABLE_NAME
              BRACE_END;
 
 // function definition
-function_definition_statement: data_type VARIABLE_NAME
+function_definition_statement: data_type IDENTIFIER
                                          PARENTHESE_BEGIN
                                          params_list?
                                          PARENTHESE_END
                                          BRACE_BEGIN
                                          statement*
-                                         RETURN (value | VARIABLE_NAME)? SEMICOLON
+                                         RETURN (value | IDENTIFIER)? SEMICOLON
                                          BRACE_END;
 
 
@@ -162,14 +161,14 @@ function_definition_statement: data_type VARIABLE_NAME
 property_definition: access_modifier define_var_statement SEMICOLON;
 
 // object instantiation
-obj_instant: variable_type VARIABLE_NAME COLON NEW VARIABLE_NAME PARENTHESE_BEGIN args_list? PARENTHESE_END;
+obj_instant: variable_type IDENTIFIER COLON NEW IDENTIFIER PARENTHESE_BEGIN args_list? PARENTHESE_END;
 
 // exception
 try_catch: TRY block
            (
-           ON VARIABLE_NAME (CATCH PARENTHESE_BEGIN VARIABLE_NAME PARENTHESE_END)? block
+           ON IDENTIFIER (CATCH PARENTHESE_BEGIN IDENTIFIER PARENTHESE_END)? block
            |
-           CATCH PARENTHESE_BEGIN VARIABLE_NAME PARENTHESE_END block
+           CATCH PARENTHESE_BEGIN IDENTIFIER PARENTHESE_END block
            );
 
 // function ( method ) call
@@ -180,18 +179,18 @@ function_call_statement: chaining
                          SEMICOLON;
 
 // *************************************
-params_list: data_type VARIABLE_NAME default_value? (COMMA data_type VARIABLE_NAME default_value?)*;
+params_list: data_type IDENTIFIER default_value? (COMMA data_type IDENTIFIER default_value?)*;
 default_value: ASSIGN value;
 args_list: ((value | chaining) (COMMA (value | chaining))*);
 condition: BOOLEAN_VALUE | expression;
 block: BRACE_BEGIN statement* BRACE_END;
-expression: (value | VARIABLE_NAME) compare_sign (value | VARIABLE_NAME);
+expression: (value | IDENTIFIER) compare_sign (value | IDENTIFIER);
 compare_sign: EQUAL | LESS | LESS_EQUAL | GREATER | GREATHER_EQUAL | NON_EQUAL;
 access_modifier: PUBLIC | PRIVATE | PROTECTED;
 variable_type: VAR | CONST;
 data_type: INT | STRING | DOUBLE | BOOLEAN | CHARACTER | FLOAT | VOID;
 value: INT_VALUE | BOOLEAN_VALUE | DOUBLE_VALUE | EXP_VALUE | STRING_VALUE;
-chaining: VARIABLE_NAME (DOT VARIABLE_NAME)*;
+chaining: IDENTIFIER (DOT IDENTIFIER)*;
 
 /*
  === === === === Lexer Rules === === === ===
@@ -288,6 +287,6 @@ DECIMAL_PART: '.' DIGIT+;
 EXP_PART: EXP_SYMBOL (PLUS | MINUS)? DIGIT+;
 
 // variable naming rule
-VARIABLE_NAME: [a-zA-Z$_]+ [a-zA-Z0-9$_]+;
+IDENTIFIER: [a-zA-Z$_]+ [a-zA-Z0-9$_]+;
 
 DIGIT: [0-9];
