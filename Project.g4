@@ -30,11 +30,12 @@ statement:
    |
    obj_instant SEMICOLON
    |
-   try_catch;
+   try_catch
+   |
+   operation SEMICOLON;
 
 // import statement
-import_statement: (FROM chaining)?
-                  IMPORT
+import_statement: (FROM chaining)? IMPORT
                   (
                   (IDENTIFIER(COMMA IDENTIFIER)*)
                   |
@@ -49,8 +50,8 @@ import_statement: (FROM chaining)?
 // define variable statement
 define_var_statement: variable_type define_var (COMMA define_var)*;
 define_var: define_var_with_type | define_var_without_type;
-define_var_without_type: IDENTIFIER ASSIGN value;
-define_var_with_type: IDENTIFIER COLON data_type ( ASSIGN value )?;
+define_var_without_type: IDENTIFIER ASSIGN operation;
+define_var_with_type: IDENTIFIER COLON data_type ( ASSIGN operation )?;
 define_array_statement: define_array_with_initialization | define_array_without_initialization;
 define_array_without_initialization: variable_type
                                      IDENTIFIER
@@ -178,6 +179,43 @@ function_call_statement: chaining
                          PARENTHESE_END
                          SEMICOLON;
 
+//// change variable value
+//change_value_statement: chaining assign_operator operation;
+
+// operations
+operation: PARENTHESE_BEGIN operation PARENTHESE_END
+           |
+           operation STAR_STAR operation*
+           |
+           TILDE operation
+           |
+           (PLUS | MINUS) operation
+           |
+           (PLUS_PLUS | MINUS_MINUS) operation
+           |
+           operation (STAR | SLASH_SLASH | DIVIDE | MOD) operation
+           |
+           operation (PLUS | MINUS) operation
+           |
+           operation (SHIFT_LEFT | SHIFT_RIGHT) operation
+           |
+           operation (BIT_AND | BIT_OR | BIT_XOR) operation
+           |
+           operation (EQUAL | NON_EQUAL) operation
+           |
+           operation (GREATHER_EQUAL | GREATER | LESS_EQUAL | LESS) operation
+           |
+           NOT operation
+           |
+           operation (AND | OR) operation
+           |
+           chaining assign_operator operation
+           |
+           value
+           |
+           chaining
+           ;
+
 // *************************************
 params_list: data_type IDENTIFIER default_value? (COMMA data_type IDENTIFIER default_value?)*;
 default_value: ASSIGN value;
@@ -191,6 +229,7 @@ variable_type: VAR | CONST;
 data_type: INT | STRING | DOUBLE | BOOLEAN | CHARACTER | FLOAT | VOID;
 value: INT_VALUE | BOOLEAN_VALUE | DOUBLE_VALUE | EXP_VALUE | STRING_VALUE;
 chaining: IDENTIFIER (DOT IDENTIFIER)*;
+assign_operator: ASSIGN | PLUS_ASSING | MULTIPLY_ASSING | MINUS_ASSING | DIVIDE_ASSING;
 
 /*
  === === === === Lexer Rules === === === ===
@@ -243,12 +282,25 @@ BRACE_END       : '}';
 PARENTHESE_BEGIN: '(';
 PARENTHESE_END  : ')';
 DOUBLE_QUOTE    : '"';
-SINGLE_QUOTE    : '\'';
-EXP_SYMBOL      : 'E' | 'e';
+EXP_SYMBOL      : 'e';
 PLUS            : '+';
 MINUS           : '-';
 PLUS_PLUS       : '++';
 MINUS_MINUS     : '--';
+STAR_STAR       : '**';
+DIVIDE          : '/';
+SLASH_SLASH     : '//';
+MOD             : '%';
+SHIFT_LEFT      : '<<';
+SHIFT_RIGHT     : '>>';
+BIT_AND         : '&' ;
+BIT_OR          : '|' ;
+BIT_XOR         : '^' ;
+PLUS_ASSING     : '+=';
+MINUS_ASSING    : '-=';
+MULTIPLY_ASSING : '*=';
+DIVIDE_ASSING   : '/=';
+TILDE           : '~';
 
 // compare signs
 EQUAL           : '==';
@@ -259,9 +311,9 @@ LESS_EQUAL      : '<=';
 NON_EQUAL       : '!=';
 
 // logical operators
-AND             : '&&';
-OR              : '||';
-NOT             : '!';
+AND             : '&&' | 'and';
+OR              : '||' | 'or';
+NOT             : '!'  | 'not';
 
 // primitive data types
 INT             : 'Int';
