@@ -1,0 +1,9 @@
+number = 3 + 5 * 6;
+number = (3 + 5) * 6;
+number = (.34e+3 + 4) / 7.4; # EXPONENT NUMBER
+number = 1 + 2 - 3 + 4 / 9 * 5;
+number = 1 + 2 & 1; # BIT AND
+number = 1 << 5 * 4; # BIT SHIFT LEFT
+number += 2 + 4 / 4;
+number *= 132 + 2**3;
+number -= ++count * 3;

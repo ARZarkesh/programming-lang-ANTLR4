@@ -185,7 +185,7 @@ function_call_statement: chaining
 // operations
 operation: PARENTHESE_BEGIN operation PARENTHESE_END
            |
-           operation STAR_STAR operation*
+           operation STAR_STAR operation
            |
            TILDE operation
            |
